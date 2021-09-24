@@ -1,9 +1,15 @@
+const imgUrl = "https://dog.ceo/api/breeds/image/random/4"
+
+
 document.addEventListener('DOMContentLoaded', event => {
-  fetch("https://dog.ceo/api/breeds/image/random/4")
+  fetch(imgUrl)
   .then(response => response.json()) 
-  .then(dogData => dogData.forEach(dog => showDogs(dog)))
+  .then(dogData => dogData.message.forEach(dog => {
+    let list = document.querySelector('#dog-image-container');
+    let picture = document.createElement('img');
+    picture.src = dogData.message[0]
+    list.appendChild(picture);
+  }));
 });
 
-function showDogs(){
-  console.log('hello')
-}
+
