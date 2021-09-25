@@ -1,5 +1,6 @@
 const imgUrl = "https://dog.ceo/api/breeds/image/random/4"
 const breedUrl = 'https://dog.ceo/api/breeds/list/all'
+let allKeys;
 
 document.addEventListener('DOMContentLoaded', event => {
   fetch(imgUrl)
@@ -7,13 +8,9 @@ document.addEventListener('DOMContentLoaded', event => {
   .then(dogData => dogData.message.forEach(dog => renderDog(dog)));
   fetch(breedUrl)
   .then(response => response.json())
-  .then(dogList => {
-    let fullNames = Object.entries(dogList.message);
-    fullNames.forEach(name => renderList(name));
-    document.querySelector('ul').addEventListener('click',changeFontColor);
-  })
-  document.querySelector('#breed-dropdown').addEventListener('click',dropdown);
-});
+  .then(() => renderList());
+  });
+
 
 function renderDog(dog){
   let container = document.querySelector('#dog-image-container');
@@ -22,13 +19,31 @@ function renderDog(dog){
     container.appendChild(picture);
 };
 
-function renderList(name){
-  let list = document.querySelector('#dog-breeds');
-  let dogNames = document.createElement('li');
-  dogNames.classList.add('.clickable');
-  dogNames.textContent = name;
-  list.appendChild(dogNames);
-};
+function renderList(){
+fetch(breedUrl)
+  .then(res => res.json())
+  .then(result => {
+    let div = document.querySelector("body");
+    let ul = document.createElement("ul");
+    allKeys = Object.keys(result.message);
+    allKeys.forEach(key => {
+      let breeds = result.message[key];
+      let li = document.createElement("li");
+      li.innerText = key;
+      if (breeds.length != 0) {
+        let ul2 = document.createElement("ul");
+        breeds.forEach(breed => {
+          let li2 = document.createElement("li");
+          li2.innerText = breed;
+          ul2.appendChild(li2);
+        });
+        li.append(ul2);
+      }
+      ul.appendChild(li);
+    });
+    div.append(ul);
+  });
+}
 
 function changeFontColor(event){
   let e = event.target;
@@ -37,10 +52,8 @@ function changeFontColor(event){
 
 function dropdown (event) {
   console.log(event.target.value)
-  if (event.target.value == 'a') {
-    let a = document.querySelector('ul').innerText;
-    let result = a.match(/a[0-9]/g)
-    console.log(result)
-  }
+  let e = event.target.value;
+  let startsWithLetter = fullNames.filter(name => name.startsWith(e));
+  console.log(startsWithLetter)
 }
 
