@@ -1,6 +1,7 @@
 const imgUrl = "https://dog.ceo/api/breeds/image/random/4"
 const breedUrl = 'https://dog.ceo/api/breeds/list/all'
 let allKeys;
+const allBreeds = [];
 
 document.addEventListener('DOMContentLoaded', event => {
   fetch(imgUrl)
@@ -8,10 +9,12 @@ document.addEventListener('DOMContentLoaded', event => {
   .then(dogData => dogData.message.forEach(dog => renderDog(dog)));
   fetch(breedUrl)
   .then(response => response.json())
-  .then(() => {
-    renderList();
-    gatherDogs();
-  })
+  .then(breedData => {
+    renderList(breedData)
+    allBreeds.push(breedData.message)
+  });
+  document.querySelector('ul').addEventListener('click',changeFontColor);
+  document.querySelector('#breed-dropdown').addEventListener('change',filterDogs);
 });
  
 function renderDog(dog){
@@ -21,10 +24,7 @@ function renderDog(dog){
     container.appendChild(picture);
 };
 
-function renderList(){
-  fetch(breedUrl)
-  .then(res => res.json())
-  .then(result => {
+function renderList(result){
     let div = document.querySelector("body");
     let ul = document.querySelector("#dog-breeds");
     allKeys = Object.keys(result.message);
@@ -44,34 +44,26 @@ function renderList(){
       ul.appendChild(li);
     });
     div.append(ul);
-  });
-}
+  };
 
-function gatherDogs(){
-  let texts = document.querySelectorAll('ul');
-  let granularTexts = (texts[0].children)
-  let arrayTexts = Array.from(granularTexts)
-  console.log(granularTexts)
-  console.log(arrayTexts)
+function filterDogs(event){
+  let e = event.target.value;
+  let newBreedsArray = Object.keys(allBreeds[0]);
+  let result = newBreedsArray.filter(word => word.startsWith(e));
+  
+  document.querySelector('#dog-breeds').innerText = '';
+  result.map(dog => {
+    let li = document.createElement('li');
+    li.innerText = dog;
+    document.querySelector('#dog-breeds').appendChild(li);
+  })
 
-  for(let i=0;i < arrayTexts.length; i++){
-     console.log(arrayTexts[i].textContent);
-  }
- 
-
-  //Iterate on list of dogs and strip away HTML elements OR
-  //Select text within each li
-}
+  console.log(result);
+};
 
 function changeFontColor(event){
   let e = event.target;
   e.style.color = 'red';
 };
 
-// function dropdown (event) {
-//   console.log(event.target.value)
-//   let e = event.target.value;
-//   let startsWithLetter = fullNames.filter(name => name.startsWith(e));
-//   console.log(startsWithLetter)
-// }
 
